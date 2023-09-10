@@ -20,6 +20,7 @@ export interface IMessage {
   sender: string;
   receiver: string;
   timestamp: string;
+  chatName: string;
 }
 
 export interface UserData {
@@ -49,9 +50,16 @@ export default function HomeScreen() {
 
   // Handle sending a message
   const onMessageSend = (userMessage: IMessage) => {
+    console.log(userMessage);
     // Create a copy of the user list
     const updatedUserList = [...userList];
-    console.log(userMessage);
+    const chatToUpdate = updatedUserList.find(element => {
+      return element.name === userMessage.chatName;
+    });
+    console.log(chatToUpdate);
+    chatToUpdate?.chatData?.push(userMessage);
+    console.log(chatToUpdate);
+    // setUserList(updatedUserList);
   };
 
   // Handle updating user with a new message (e.g., when a message is received)

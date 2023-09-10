@@ -18,21 +18,8 @@ export default function ChatScreen() {
     updateUserWithNewMessage: (receivedMessage: IMessage) => void;
   };
 
-  console.log('--------------------------------');
-  console.log(userData.item.chatData);
-
-  // const onMessageSend = () => {
-  //   if (text.trim() === '') return;
-
-  //   const newMessage = {
-  //     id: messages.length + 1,
-  //     text,
-  //     sender: isMe ? 'me' : 'user',
-  //   };
-
-  //   setMessages([...messages, newMessage]);
-  //   setText('');
-  // };
+  // console.log('--------------------------------');
+  // console.log(userData.item.chatData);
 
   const onSendPress = () => {
     if (text.trim() === '') return;
@@ -43,6 +30,7 @@ export default function ChatScreen() {
       sender: isMe ? 'me' : userData.item.name,
       receiver: !isMe ? 'me' : userData.item.name,
       timestamp: new Date().toISOString(),
+      chatName: userData.item.name,
     };
 
     onMessageSend(newMessage);
