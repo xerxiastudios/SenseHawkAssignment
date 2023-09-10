@@ -13,7 +13,7 @@ export default function ChatScreen() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [text, setText] = useState('');
 
-  const handleSend = () => {
+  const onMessageSend = () => {
     if (text.trim() === '') return;
 
     const newMessage = {
@@ -72,7 +72,7 @@ export default function ChatScreen() {
           onChangeText={newText => setText(newText)}
         />
         <TouchableOpacity
-          onPress={handleSend}
+          onPress={onMessageSend}
           style={{backgroundColor: '#007BFF', borderRadius: 8, padding: 8}}>
           <Text style={{color: 'white'}}>Send</Text>
         </TouchableOpacity>

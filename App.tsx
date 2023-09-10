@@ -6,6 +6,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import MapboxGL from '@rnmapbox/maps';
 
 import ChatScreen from './src/screens/ChatScreen';
+import HomeScreen from './src/screens/HomeScreen';
 import MapScreen from './src/screens/MapScreen';
 
 MapboxGL.setConnected(true);
@@ -25,9 +26,10 @@ const Stack = createNativeStackNavigator();
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Map">
+      <Stack.Navigator initialRouteName="Home">
         <Stack.Screen name="Map" component={MapScreen} />
         <Stack.Screen name="Chat" component={ChatScreen} />
+        <Stack.Screen name="Home" component={HomeScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
