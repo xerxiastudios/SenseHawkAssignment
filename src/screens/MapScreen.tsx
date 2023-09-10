@@ -180,7 +180,11 @@ export default function MapScreen() {
                 );
               })}
           </Mapbox.MapView>
-        ) : null}
+        ) : (
+          <View style={{flex: 1, alignContent: 'center'}}>
+            <ActivityIndicator />
+          </View>
+        )}
 
         <Modal animationType="none" transparent={true} visible={modalVisible}>
           <View style={styles.centeredView}>
