@@ -1,0 +1,34 @@
+import * as React from 'react';
+import { LogBox } from 'react-native';
+
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import MapboxGL from '@rnmapbox/maps';
+
+import ChatScreen from './src/screens/ChatScreen';
+import MapScreen from './src/screens/MapScreen';
+
+MapboxGL.setConnected(true);
+MapboxGL.setTelemetryEnabled(false);
+MapboxGL.setWellKnownTileServer('Mapbox');
+MapboxGL.setAccessToken(
+  'pk.eyJ1IjoiYWJoaXNoZWtiaXN3YXMiLCJhIjoiY2xtYTc1a2trMGRqMzNobDVkaDhiNmJsNCJ9.72RCUYZTh1AGwAXkLT_Tjw',
+);
+
+LogBox.ignoreLogs([
+  'Warning: isMounted(...) is deprecated',
+  'Module RCTImageLoader',
+]);
+
+const Stack = createNativeStackNavigator();
+
+export default function App() {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="Map">
+        <Stack.Screen name="Map" component={MapScreen} />
+        <Stack.Screen name="Chat" component={ChatScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
