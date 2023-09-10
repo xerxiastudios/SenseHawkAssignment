@@ -28,11 +28,11 @@ export default function MapScreen() {
     useState(false);
   const [isFetchingAndroidPermissions, setIsFetchingAndroidPermissions] =
     useState(true);
-  const [showPitch, setShowPitch] = useState(false);
 
   const [location, setLocation] = useState<ILocation | undefined>(undefined);
   const [mapboxToken, setMapBoxToken] = useState('');
-
+  const [maxRadius, setMaxRadius] = useState(1);
+  const [filteredUserList, setFilteredUserList] = useState<IUser[]>();
   const navigation = useNavigation<any>();
   const route = useRoute();
 
@@ -41,6 +41,34 @@ export default function MapScreen() {
     onMessageSend: (userMessage: IMessage) => void;
     updateUserWithNewMessage: (receivedMessage: IMessage) => void;
   };
+
+  function calculateDistance(coord1: ILocation, coord2: ILocation): number {
+    const radlat1 = (Math.PI * coord1.latitude) / 180;
+    const radlat2 = (Math.PI * coord2.latitude) / 180;
+    const theta = coord1.longitude - coord2.longitude;
+    const radtheta = (Math.PI * theta) / 180;
+    let dist =
+      Math.sin(radlat1) * Math.sin(radlat2) +
+      Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
+    dist = Math.acos(dist);
+    dist = (dist * 180) / Math.PI;
+    dist = dist * 60 * 1.1515 * 1.609344; // Convert to kilometers
+    return dist;
+  }
+
+  function filterUsersByDistance(
+    userList: IUser[],
+    referenceLocation: ILocation,
+    maxDistance: number,
+    minDistance: number,
+  ): IUser[] {
+    const filteredUsers = userList.filter(user => {
+      const distance = calculateDistance(user.location, referenceLocation);
+      return distance >= minDistance && distance <= maxDistance;
+    });
+
+    return filteredUsers;
+  }
 
   useEffect(() => {
     getAndroidPersimission();
@@ -51,6 +79,7 @@ export default function MapScreen() {
         longitude,
       });
     });
+    setFilteredUserList(userList);
   }, []);
 
   const getAndroidPersimission = async () => {
@@ -109,7 +138,7 @@ export default function MapScreen() {
                   ? [location.longitude, location.latitude]
                   : [10.181667, 36.806389]
               }
-              pitch={showPitch ? 60 : 0}
+              pitch={40}
               animationMode={'flyTo'}
               animationDuration={2000}
             />
@@ -123,36 +152,31 @@ export default function MapScreen() {
                   ? [location.longitude, location.latitude]
                   : [10.181667, 36.806389]
               }>
-              {/* <Image
-                style={{tintColor: 'green', width: 20, height: 20}}
-                source={require('./../../radio-button.png')}
-              /> */}
               <View style={{width: 30, height: 30}}>
                 <Icon name="enviroment" size={30} color="#82BD61" />
               </View>
             </MapboxGL.PointAnnotation>
 
-            {userList.map((item, index) => {
-              return (
-                <MapboxGL.PointAnnotation
-                  id={`annotation_${item.location.longitude}_${index}`}
-                  key={`${item.location.longitude}`}
-                  onSelected={() => {
-                    onMarkerPress(item);
-                  }}
-                  coordinate={[
-                    item.location.longitude,
-                    item.location.latitude,
-                  ]}>
-                  {/* <View /> */}
-
-                  <View>
-                    <Icon name="enviroment" size={30} color="#fa2525" />
-                    {/* <Text>{`${item.name}`}</Text> */}
-                  </View>
-                </MapboxGL.PointAnnotation>
-              );
-            })}
+            {filteredUserList &&
+              filteredUserList.length &&
+              filteredUserList.map((item, index) => {
+                return (
+                  <MapboxGL.PointAnnotation
+                    id={`annotation_${item.location.longitude}_${index}`}
+                    key={`${item.location.longitude}`}
+                    onSelected={() => {
+                      onMarkerPress(item);
+                    }}
+                    coordinate={[
+                      item.location.longitude,
+                      item.location.latitude,
+                    ]}>
+                    <View>
+                      <Icon name="enviroment" size={30} color="#fa2525" />
+                    </View>
+                  </MapboxGL.PointAnnotation>
+                );
+              })}
           </MapboxGL.MapView>
         ) : null}
       </View>
@@ -161,17 +185,31 @@ export default function MapScreen() {
           height: 120,
           backgroundColor: '#92aff7',
         }}>
-        <Slider
-          style={{
-            width: Dimensions.get('window').width - 40,
-            alignSelf: 'center',
-            marginTop: 20,
-          }}
-          minimumValue={0.5}
-          maximumValue={1}
-          minimumTrackTintColor="#FFFFFF"
-          maximumTrackTintColor="#000000"
-        />
+        {location ? (
+          <Slider
+            style={{
+              width: Dimensions.get('window').width - 40,
+              alignSelf: 'center',
+              marginTop: 20,
+            }}
+            minimumValue={0.55}
+            maximumValue={1}
+            minimumTrackTintColor="#FFFFFF"
+            maximumTrackTintColor="#000000"
+            value={maxRadius}
+            onValueChange={value => {
+              setMaxRadius(value);
+              const filteredUsers = filterUsersByDistance(
+                userList,
+                location,
+                value,
+                0.5,
+              );
+              setFilteredUserList(filteredUsers);
+            }}
+          />
+        ) : null}
+
         <Text style={{color: 'black', alignSelf: 'center', fontSize: 10}}>
           {'Min value: 0.5 km - Max value: 1.0 km'}
         </Text>
