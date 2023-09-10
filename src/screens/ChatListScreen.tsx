@@ -5,26 +5,30 @@ import {
 
 import { useNavigation, useRoute } from '@react-navigation/native';
 
-import { IMessage, IUserList, UserData } from './HomeScreen';
+import { IMessage, IUser } from './HomeScreen';
 
 export default function ChatListScreen() {
   const route = useRoute();
   const navigation = useNavigation<any>();
   console.log('===================');
-  const {userList} = route.params as {
-    userList: IUserList[];
+  const {userList, onMessageSend, updateUserWithNewMessage} = route.params as {
+    userList: IUser[];
+    onMessageSend: (userMessage: IMessage) => void;
+    updateUserWithNewMessage: (receivedMessage: IMessage) => void;
   };
 
-  const userListArr: IUserList[] = Object.entries(userList).map(
-    ([id, data]) => ({
-      ...data,
-    }),
-  );
+  const userListArr: IUser[] = Object.entries(userList).map(([id, data]) => ({
+    ...data,
+  }));
 
   console.log(userListArr);
 
-  const onSelectItem = (item: ListRenderItemInfo<IUserList>) => {
-    navigation.navigate('Chat', {userData: item});
+  const onSelectItem = (item: ListRenderItemInfo<IUser>) => {
+    navigation.navigate('Chat', {
+      userData: item,
+      onMessageSend,
+      updateUserWithNewMessage,
+    });
   };
 
   return (
@@ -32,7 +36,7 @@ export default function ChatListScreen() {
       {userListArr && userListArr.length ? (
         <FlatList
           data={userListArr}
-          keyExtractor={item => item?.item?.name ?? ''}
+          keyExtractor={item => item?.name ?? ''}
           renderItem={item => {
             return (
               <TouchableOpacity onPress={() => onSelectItem(item)}>

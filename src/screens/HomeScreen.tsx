@@ -4,8 +4,14 @@ import { SafeAreaView } from 'react-native';
 import ChatComponent from '../lib/ChatComponent';
 
 // Interfaces
-export interface IUserList {
-  [key: string]: UserData & {chatData: IMessage[]};
+
+export interface IUser {
+  name: string;
+  location: {
+    latitude: number;
+    longitude: number;
+  };
+  chatData: IMessage[];
 }
 
 export interface IMessage {
@@ -27,39 +33,31 @@ interface UserLocation {
 }
 
 export default function HomeScreen() {
-  const [userList, setUserList] = useState<IUserList>({
-    user1: {
+  const [userList, setUserList] = useState<IUser[]>([
+    {
       name: 'User 1',
       location: {latitude: 40.7128, longitude: -74.006},
-      chatData: [], // Chat messages for User 1
+      chatData: [],
     },
-    user2: {
+    {
       name: 'User 2',
       location: {latitude: 34.0522, longitude: -118.2437},
-      chatData: [], // Chat messages for User 2
+      chatData: [],
     },
     // Add more users as needed
-  });
+  ]);
 
   // Handle sending a message
   const onMessageSend = (userMessage: IMessage) => {
-    // Update chat data for the sender
-    const updatedUserList = {...userList};
-
-    // Update chat data for the sender
-    updatedUserList[userMessage.sender].chatData.push(userMessage);
-
-    setUserList(updatedUserList);
+    // Create a copy of the user list
+    const updatedUserList = [...userList];
+    console.log(userMessage);
   };
 
   // Handle updating user with a new message (e.g., when a message is received)
   const updateUserWithNewMessage = (receivedMessage: IMessage) => {
-    const updatedUserList = {...userList};
-
-    // Update chat data for the recipient
-    updatedUserList[receivedMessage.receiver].chatData.push(receivedMessage);
-
-    setUserList(updatedUserList);
+    // Create a copy of the user list
+    const updatedUserList = [...userList];
   };
 
   return (

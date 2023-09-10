@@ -1,45 +1,81 @@
 import React, { useEffect, useState } from 'react';
-import { SafeAreaView, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import {
+    ListRenderItemInfo, SafeAreaView, ScrollView, Text, TextInput, TouchableOpacity, View
+} from 'react-native';
 
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useRoute } from '@react-navigation/native';
 
-interface Message {
-  id: number;
-  text: string;
-  sender: string;
-}
+import { IMessage, IUser } from './HomeScreen';
 
 export default function ChatScreen() {
-  const [messages, setMessages] = useState<Message[]>([]);
   const [text, setText] = useState('');
+  const [isMe, setIsMe] = useState(true);
 
-  const onMessageSend = () => {
+  const route = useRoute();
+  const {userData, onMessageSend, updateUserWithNewMessage} = route.params as {
+    userData: ListRenderItemInfo<IUser>;
+    onMessageSend: (userMessage: IMessage) => void;
+    updateUserWithNewMessage: (receivedMessage: IMessage) => void;
+  };
+
+  console.log('--------------------------------');
+  console.log(userData.item.chatData);
+
+  // const onMessageSend = () => {
+  //   if (text.trim() === '') return;
+
+  //   const newMessage = {
+  //     id: messages.length + 1,
+  //     text,
+  //     sender: isMe ? 'me' : 'user',
+  //   };
+
+  //   setMessages([...messages, newMessage]);
+  //   setText('');
+  // };
+
+  const onSendPress = () => {
     if (text.trim() === '') return;
 
-    const newMessage = {
-      id: messages.length + 1,
+    const newMessage: IMessage = {
+      id: userData.item.chatData.length + 1,
       text,
-      sender: 'bot', // You can differentiate between users and the bot or other users
+      sender: isMe ? 'me' : userData.item.name,
+      receiver: !isMe ? 'me' : userData.item.name,
+      timestamp: new Date().toISOString(),
     };
 
-    setMessages([...messages, newMessage]);
+    onMessageSend(newMessage);
     setText('');
   };
 
   return (
     <SafeAreaView style={{flex: 1}}>
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          padding: 16,
+          backgroundColor: '#bdc8f2',
+        }}>
+        <TouchableOpacity onPress={() => setIsMe(true)}>
+          <Text style={{color: 'green'}}>{'Select as Me'}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => setIsMe(false)}>
+          <Text style={{color: 'red'}}>{'Select as User'}</Text>
+        </TouchableOpacity>
+      </View>
       <View style={{flex: 1}}>
         <ScrollView
           contentContainerStyle={{paddingVertical: 16}}
           style={{flex: 1}}>
-          {messages.map(message => (
+          {userData?.chatData?.map(message => (
             <View
               key={message.id}
               style={{
-                alignSelf:
-                  message.sender === 'user' ? 'flex-end' : 'flex-start',
+                alignSelf: message.sender === 'me' ? 'flex-end' : 'flex-start',
                 backgroundColor:
-                  message.sender === 'user' ? '#007BFF' : '#E5E5EA',
+                  message.sender === 'me' ? '#007BFF' : '#E5E5EA',
                 borderRadius: 8,
                 padding: 8,
                 margin: 4,
@@ -47,7 +83,7 @@ export default function ChatScreen() {
               }}>
               <Text
                 style={{
-                  color: message.sender === 'user' ? 'white' : 'black',
+                  color: message.sender === 'me' ? 'white' : 'black',
                 }}>
                 {message.text}
               </Text>
@@ -72,9 +108,11 @@ export default function ChatScreen() {
           onChangeText={newText => setText(newText)}
         />
         <TouchableOpacity
-          onPress={onMessageSend}
+          onPress={onSendPress}
           style={{backgroundColor: '#007BFF', borderRadius: 8, padding: 8}}>
-          <Text style={{color: 'white'}}>Send</Text>
+          <Text style={{color: 'white'}}>{`Send ${
+            isMe ? '(Me)' : '(User)'
+          }`}</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
