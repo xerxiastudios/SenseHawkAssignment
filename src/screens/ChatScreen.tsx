@@ -3,7 +3,7 @@ import {
     ListRenderItemInfo, SafeAreaView, ScrollView, Text, TextInput, TouchableOpacity, View
 } from 'react-native';
 
-import { useRoute } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 import { IMessage, IUser } from '../utils/types';
 
@@ -12,11 +12,18 @@ export default function ChatScreen() {
   const [isMe, setIsMe] = useState(true);
 
   const route = useRoute();
+  const navigation = useNavigation<any>();
   const {userData, onMessageSend, updateUserWithNewMessage} = route.params as {
     userData: ListRenderItemInfo<IUser>;
     onMessageSend: (userMessage: IMessage) => void;
     updateUserWithNewMessage: (receivedMessage: IMessage) => void;
   };
+
+  useEffect(() => {
+    navigation.setOptions({
+      title: `Chat (${userData.item.name})`,
+    });
+  }, []);
 
   // console.log('--------------------------------');
   // console.log(userData.item.chatData);
@@ -43,14 +50,18 @@ export default function ChatScreen() {
         style={{
           flexDirection: 'row',
           justifyContent: 'space-between',
-          padding: 16,
+          padding: 8,
           backgroundColor: '#bdc8f2',
         }}>
         <TouchableOpacity onPress={() => setIsMe(true)}>
-          <Text style={{color: 'green'}}>{'Select as Me'}</Text>
+          <Text style={{color: 'green', padding: 8}}>{'Select as Me'}</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => setIsMe(false)}>
-          <Text style={{color: 'red'}}>{'Select as User'}</Text>
+          <Text
+            style={{
+              color: 'red',
+              padding: 8,
+            }}>{`Select as ${userData.item.name}`}</Text>
         </TouchableOpacity>
       </View>
       <View style={{flex: 1}}>
@@ -99,7 +110,7 @@ export default function ChatScreen() {
           onPress={onSendPress}
           style={{backgroundColor: '#007BFF', borderRadius: 8, padding: 8}}>
           <Text style={{color: 'white'}}>{`Send ${
-            isMe ? '(Me)' : '(User)'
+            isMe ? '(Me)' : `(${userData.item.name})`
           }`}</Text>
         </TouchableOpacity>
       </View>
