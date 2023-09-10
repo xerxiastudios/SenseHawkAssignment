@@ -69,7 +69,7 @@ export default function ChatScreen() {
         <ScrollView
           contentContainerStyle={{paddingVertical: 16}}
           style={{flex: 1}}>
-          {userData?.chatData?.map(message => (
+          {userData?.item?.chatData?.map(message => (
             <View
               key={message.id}
               style={{
