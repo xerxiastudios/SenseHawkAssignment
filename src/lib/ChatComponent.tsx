@@ -3,7 +3,7 @@ import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-na
 
 import { useNavigation } from '@react-navigation/native';
 
-import { IMessage, IUser } from '../screens/HomeScreen';
+import { IMessage, IUser } from '../utils/types';
 
 interface ChatComponentProps {
   userList: IUser[];
@@ -37,7 +37,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
         <TouchableOpacity
           style={[styles.button, {marginTop: 16}]}
           onPress={() => {
-            navigation.navigate('Map');
+            navigation.navigate('Map', {userList});
           }}>
           <Text style={styles.buttonText}>Map screen</Text>
         </TouchableOpacity>

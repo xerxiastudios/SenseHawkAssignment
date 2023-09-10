@@ -5,7 +5,7 @@ import {
 
 import { useRoute } from '@react-navigation/native';
 
-import { IMessage, IUser } from './HomeScreen';
+import { IMessage, IUser } from '../utils/types';
 
 export default function ChatScreen() {
   const [text, setText] = useState('');

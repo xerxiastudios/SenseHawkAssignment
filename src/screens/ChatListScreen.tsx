@@ -5,12 +5,12 @@ import {
 
 import { useNavigation, useRoute } from '@react-navigation/native';
 
-import { IMessage, IUser } from './HomeScreen';
+import { IMessage, IUser } from '../utils/types';
 
 export default function ChatListScreen() {
   const route = useRoute();
   const navigation = useNavigation<any>();
-  console.log('===================');
+  //   console.log('===================');
   const {userList, onMessageSend, updateUserWithNewMessage} = route.params as {
     userList: IUser[];
     onMessageSend: (userMessage: IMessage) => void;
@@ -21,7 +21,7 @@ export default function ChatListScreen() {
     ...data,
   }));
 
-  console.log(userListArr);
+  //   console.log(userListArr);
 
   const onSelectItem = (item: ListRenderItemInfo<IUser>) => {
     navigation.navigate('Chat', {

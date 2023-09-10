@@ -2,8 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Dimensions, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 
 import Geolocation from '@react-native-community/geolocation';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import MapboxGL, { Logger } from '@rnmapbox/maps';
+
+import { ILocation, IMessage, IUser } from '../utils/types';
+import { insertRandomUsers } from './HomeScreen';
 
 Logger.setLogCallback(log => {
   const {message} = log;
@@ -17,11 +20,6 @@ Logger.setLogCallback(log => {
   return false;
 });
 
-interface ILocation {
-  latitude: number;
-  longitude: number;
-}
-
 export default function MapScreen() {
   const [isAndroidPermissionGranted, setIsAndroidPermissionGranted] =
     useState(false);
@@ -30,10 +28,16 @@ export default function MapScreen() {
   const [showPitch, setShowPitch] = useState(false);
 
   const [location, setLocation] = useState<ILocation | undefined>(undefined);
-  const [userLocations, setUserLocations] = useState<ILocation[]>([]);
   const [mapboxToken, setMapBoxToken] = useState('');
 
   const navigation = useNavigation<any>();
+  const route = useRoute();
+
+  const {userList, onMessageSend, updateUserWithNewMessage} = route.params as {
+    userList: IUser[];
+    onMessageSend: (userMessage: IMessage) => void;
+    updateUserWithNewMessage: (receivedMessage: IMessage) => void;
+  };
 
   useEffect(() => {
     getAndroidPersimission();
@@ -43,14 +47,6 @@ export default function MapScreen() {
         latitude,
         longitude,
       });
-
-      const locationsWithinRadius = insertRandomUsers(
-        latitude,
-        longitude,
-        1,
-        10,
-      );
-      setUserLocations(locationsWithinRadius);
     });
   }, []);
 
@@ -86,8 +82,12 @@ export default function MapScreen() {
     }
   }
 
-  const onMarkerPress = (position: ILocation) => {
-    navigation.navigate('Chat', {position});
+  const onMarkerPress = (userData: IUser) => {
+    navigation.navigate('Chat', {
+      userData,
+      onMessageSend,
+      updateUserWithNewMessage,
+    });
   };
 
   return (
@@ -127,15 +127,18 @@ export default function MapScreen() {
               <View />
             </MapboxGL.PointAnnotation>
 
-            {userLocations.map((item, index) => {
+            {userList.map((item, index) => {
               return (
                 <MapboxGL.PointAnnotation
-                  id={`annotation_${item.longitude}_${index}`}
-                  key={`${item.longitude}`}
+                  id={`annotation_${item.location.longitude}_${index}`}
+                  key={`${item.location.longitude}`}
                   onSelected={() => {
                     onMarkerPress(item);
                   }}
-                  coordinate={[item.longitude, item.latitude]}>
+                  coordinate={[
+                    item.location.longitude,
+                    item.location.latitude,
+                  ]}>
                   <View />
                 </MapboxGL.PointAnnotation>
               );
@@ -146,38 +149,6 @@ export default function MapScreen() {
     </SafeAreaView>
   );
 }
-
-const insertRandomUsers = (
-  centerLat: number,
-  centerLng: number,
-  radiusInKm: number,
-  numberOfLocations: number,
-): ILocation[] => {
-  const locations: ILocation[] = [];
-
-  for (let i = 0; i < numberOfLocations; i++) {
-    // Generate a random radius within the specified range
-    const radiusInKmRan = Math.random() * (radiusInKm - 0.5) + 0.5;
-
-    // Generate a random angle to distribute locations evenly around the circle
-    const randomAngle = Math.random() * 2 * Math.PI;
-
-    // Calculate the new latitude and longitude
-    const latitude =
-      centerLat +
-      (radiusInKmRan / 6371) * (180 / Math.PI) * Math.sin(randomAngle);
-    const longitude =
-      centerLng +
-      (radiusInKmRan / 6371) *
-        (180 / Math.PI) *
-        Math.cos(centerLat * (Math.PI / 180)) *
-        Math.cos(randomAngle);
-
-    locations.push({latitude, longitude});
-  }
-
-  return locations;
-};
 
 const styles = StyleSheet.create({
   container: {

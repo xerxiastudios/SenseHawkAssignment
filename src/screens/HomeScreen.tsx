@@ -1,70 +1,34 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { SafeAreaView } from 'react-native';
 
+import Geolocation from '@react-native-community/geolocation';
+
 import ChatComponent from '../lib/ChatComponent';
-
-// Interfaces
-
-export interface IUser {
-  name: string;
-  location: {
-    latitude: number;
-    longitude: number;
-  };
-  chatData: IMessage[];
-}
-
-export interface IMessage {
-  id: number;
-  text: string;
-  sender: string;
-  receiver: string;
-  timestamp: string;
-  chatName: string;
-}
-
-export interface UserData {
-  name: string;
-  location: UserLocation;
-}
-
-interface UserLocation {
-  latitude: number;
-  longitude: number;
-}
+import { IMessage, IUser } from '../utils/types';
 
 export default function HomeScreen() {
-  const [userList, setUserList] = useState<IUser[]>([
-    {
-      name: 'User 1',
-      location: {latitude: 40.7128, longitude: -74.006},
-      chatData: [],
-    },
-    {
-      name: 'User 2',
-      location: {latitude: 34.0522, longitude: -118.2437},
-      chatData: [],
-    },
-    // Add more users as needed
-  ]);
+  const [userList, setUserList] = useState<IUser[]>([]);
 
-  // Handle sending a message
+  // create random users
+  useEffect(() => {
+    Geolocation.getCurrentPosition(info => {
+      const {latitude, longitude} = info.coords;
+
+      const users = insertRandomUsers(latitude, longitude, 1, 10);
+      setUserList(users);
+    });
+  }, []);
+
   const onMessageSend = (userMessage: IMessage) => {
-    console.log(userMessage);
-    // Create a copy of the user list
     const updatedUserList = [...userList];
     const chatToUpdate = updatedUserList.find(element => {
       return element.name === userMessage.chatName;
     });
-    console.log(chatToUpdate);
+
     chatToUpdate?.chatData?.push(userMessage);
-    console.log(chatToUpdate);
-    // setUserList(updatedUserList);
   };
 
-  // Handle updating user with a new message (e.g., when a message is received)
   const updateUserWithNewMessage = (receivedMessage: IMessage) => {
-    // Create a copy of the user list
     const updatedUserList = [...userList];
   };
 
@@ -78,3 +42,42 @@ export default function HomeScreen() {
     </SafeAreaView>
   );
 }
+
+export const insertRandomUsers = (
+  centerLat: number,
+  centerLng: number,
+  radiusInKm: number,
+  numberOfLocations: number,
+): IUser[] => {
+  const users: IUser[] = [];
+
+  for (let i = 0; i < numberOfLocations; i++) {
+    // Generate a random radius within the specified range
+    const radiusInKmRan = Math.random() * (radiusInKm - 0.5) + 0.5;
+
+    // Generate a random angle to distribute locations evenly around the circle
+    const randomAngle = Math.random() * 2 * Math.PI;
+
+    // Calculate the new latitude and longitude
+    const latitude =
+      centerLat +
+      (radiusInKmRan / 6371) * (180 / Math.PI) * Math.sin(randomAngle);
+    const longitude =
+      centerLng +
+      (radiusInKmRan / 6371) *
+        (180 / Math.PI) *
+        Math.cos(centerLat * (Math.PI / 180)) *
+        Math.cos(randomAngle);
+
+    // Create a user object and push it to the users array
+    const user: IUser = {
+      name: `User ${i + 1}`,
+      location: {latitude, longitude},
+      chatData: [],
+    };
+
+    users.push(user);
+  }
+
+  return users;
+};
