@@ -1,39 +1,51 @@
 import React from 'react';
-import { FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+    FlatList, ListRenderItemInfo, SafeAreaView, StyleSheet, Text, TouchableOpacity, View
+} from 'react-native';
 
-import { useRoute } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 import { IMessage, IUserList, UserData } from './HomeScreen';
 
 export default function ChatListScreen() {
   const route = useRoute();
-
-  console.log(route.params);
-
-  const renderItem = ({item}: {item: UserData & {chatData: IMessage[]}}) => {
-    const lastMessage =
-      item.chatData.length > 0
-        ? item.chatData[item.chatData.length - 1].text
-        : '';
-    return (
-      <TouchableOpacity onPress={() => onSelectItem()}>
-        <View style={styles.userItem}>
-          <Text style={styles.userName}>{item.name}</Text>
-          <Text style={styles.lastMessage}>{lastMessage}</Text>
-        </View>
-      </TouchableOpacity>
-    );
+  const navigation = useNavigation<any>();
+  console.log('===================');
+  const {userList} = route.params as {
+    userList: IUserList[];
   };
 
-  const onSelectItem = () => {};
+  const userListArr: IUserList[] = Object.entries(userList).map(
+    ([id, data]) => ({
+      ...data,
+    }),
+  );
+
+  console.log(userListArr);
+
+  const onSelectItem = (item: ListRenderItemInfo<IUserList>) => {
+    navigation.navigate('Chat', {userData: item});
+  };
 
   return (
     <SafeAreaView style={{flex: 1}}>
-      <FlatList
-        data={[]}
-        keyExtractor={item => item.name}
-        renderItem={renderItem}
-      />
+      {userListArr && userListArr.length ? (
+        <FlatList
+          data={userListArr}
+          keyExtractor={item => item?.item?.name ?? ''}
+          renderItem={item => {
+            return (
+              <TouchableOpacity onPress={() => onSelectItem(item)}>
+                <View style={styles.userItem}>
+                  <Text style={styles.userName}>{`${
+                    item?.item?.name ?? ''
+                  }`}</Text>
+                </View>
+              </TouchableOpacity>
+            );
+          }}
+        />
+      ) : null}
     </SafeAreaView>
   );
 }
@@ -50,6 +62,7 @@ const styles = StyleSheet.create({
   userName: {
     fontSize: 18,
     fontWeight: 'bold',
+    color: 'black',
   },
   lastMessage: {
     fontSize: 14,
