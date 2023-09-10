@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Dimensions, SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import {
+    ActivityIndicator, Dimensions, Image, SafeAreaView, StyleSheet, Text, View
+} from 'react-native';
+import Icon from 'react-native-vector-icons/AntDesign';
 
 import Geolocation from '@react-native-community/geolocation';
+import Slider from '@react-native-community/slider';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import MapboxGL, { Logger } from '@rnmapbox/maps';
 
 import { ILocation, IMessage, IUser } from '../utils/types';
-import { insertRandomUsers } from './HomeScreen';
 
 Logger.setLogCallback(log => {
   const {message} = log;
@@ -121,10 +124,12 @@ export default function MapScreen() {
                   : [10.181667, 36.806389]
               }>
               {/* <Image
-                style={{tintColor: 'green'}}
-                source={require('./radio-button.png')}
+                style={{tintColor: 'green', width: 20, height: 20}}
+                source={require('./../../radio-button.png')}
               /> */}
-              <View />
+              <View style={{width: 30, height: 30}}>
+                <Icon name="enviroment" size={30} color="#82BD61" />
+              </View>
             </MapboxGL.PointAnnotation>
 
             {userList.map((item, index) => {
@@ -139,12 +144,37 @@ export default function MapScreen() {
                     item.location.longitude,
                     item.location.latitude,
                   ]}>
-                  <View />
+                  {/* <View /> */}
+
+                  <View>
+                    <Icon name="enviroment" size={30} color="#fa2525" />
+                    {/* <Text>{`${item.name}`}</Text> */}
+                  </View>
                 </MapboxGL.PointAnnotation>
               );
             })}
           </MapboxGL.MapView>
         ) : null}
+      </View>
+      <View
+        style={{
+          height: 120,
+          backgroundColor: '#92aff7',
+        }}>
+        <Slider
+          style={{
+            width: Dimensions.get('window').width - 40,
+            alignSelf: 'center',
+            marginTop: 20,
+          }}
+          minimumValue={0.5}
+          maximumValue={1}
+          minimumTrackTintColor="#FFFFFF"
+          maximumTrackTintColor="#000000"
+        />
+        <Text style={{color: 'black', alignSelf: 'center', fontSize: 10}}>
+          {'Min value: 0.5 km - Max value: 1.0 km'}
+        </Text>
       </View>
     </SafeAreaView>
   );
@@ -152,7 +182,7 @@ export default function MapScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    height: Dimensions.get('window').height,
+    height: Dimensions.get('window').height - 120,
     width: Dimensions.get('window').width,
   },
   map: {
