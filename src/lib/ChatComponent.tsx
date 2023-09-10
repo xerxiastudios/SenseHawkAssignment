@@ -37,7 +37,11 @@ const ChatComponent: React.FC<ChatComponentProps> = ({
         <TouchableOpacity
           style={[styles.button, {marginTop: 16}]}
           onPress={() => {
-            navigation.navigate('Map', {userList});
+            navigation.navigate('Map', {
+              userList,
+              onMessageSend,
+              updateUserWithNewMessage,
+            });
           }}>
           <Text style={styles.buttonText}>Map screen</Text>
         </TouchableOpacity>

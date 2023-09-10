@@ -24,8 +24,10 @@ export default function ChatListScreen() {
   //   console.log(userListArr);
 
   const onSelectItem = (item: ListRenderItemInfo<IUser>) => {
+    const iUserItem = item.item;
+
     navigation.navigate('Chat', {
-      userData: item,
+      userData: iUserItem,
       onMessageSend,
       updateUserWithNewMessage,
     });

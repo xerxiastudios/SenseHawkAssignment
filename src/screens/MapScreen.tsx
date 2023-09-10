@@ -115,6 +115,8 @@ export default function MapScreen() {
   }
 
   const onMarkerPress = (userData: IUser) => {
+    console.log(userData);
+
     navigation.navigate('Chat', {
       userData,
       onMessageSend,

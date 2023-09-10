@@ -14,30 +14,30 @@ export default function ChatScreen() {
   const route = useRoute();
   const navigation = useNavigation<any>();
   const {userData, onMessageSend, updateUserWithNewMessage} = route.params as {
-    userData: ListRenderItemInfo<IUser>;
+    userData: IUser;
     onMessageSend: (userMessage: IMessage) => void;
     updateUserWithNewMessage: (receivedMessage: IMessage) => void;
   };
 
   useEffect(() => {
     navigation.setOptions({
-      title: `Chat (${userData.item.name})`,
+      title: `Chat (${userData?.name ?? ''})`,
     });
   }, []);
 
   // console.log('--------------------------------');
-  // console.log(userData.item.chatData);
+  // console.log(userData);
 
   const onSendPress = () => {
     if (text.trim() === '') return;
 
     const newMessage: IMessage = {
-      id: userData.item.chatData.length + 1,
+      id: userData?.chatData?.length + 1,
       text,
-      sender: isMe ? 'me' : userData.item.name,
-      receiver: !isMe ? 'me' : userData.item.name,
+      sender: isMe ? 'me' : userData?.name,
+      receiver: !isMe ? 'me' : userData?.name,
       timestamp: new Date().toISOString(),
-      chatName: userData.item.name,
+      chatName: userData?.name,
     };
 
     onMessageSend(newMessage);
@@ -61,14 +61,14 @@ export default function ChatScreen() {
             style={{
               color: 'red',
               padding: 8,
-            }}>{`Select as ${userData.item.name}`}</Text>
+            }}>{`Select as ${userData?.name}`}</Text>
         </TouchableOpacity>
       </View>
       <View style={{flex: 1}}>
         <ScrollView
           contentContainerStyle={{paddingVertical: 16}}
           style={{flex: 1}}>
-          {userData?.item?.chatData?.map(message => (
+          {userData?.chatData?.map(message => (
             <View
               key={message.id}
               style={{
@@ -110,7 +110,7 @@ export default function ChatScreen() {
           onPress={onSendPress}
           style={{backgroundColor: '#007BFF', borderRadius: 8, padding: 8}}>
           <Text style={{color: 'white'}}>{`Send ${
-            isMe ? '(Me)' : `(${userData.item.name})`
+            isMe ? '(Me)' : `(${userData?.name})`
           }`}</Text>
         </TouchableOpacity>
       </View>
