@@ -7,7 +7,7 @@ import Icon from 'react-native-vector-icons/AntDesign';
 import Geolocation from '@react-native-community/geolocation';
 import Slider from '@react-native-community/slider';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import MapboxGL, { Logger } from '@rnmapbox/maps';
+import Mapbox, { Logger } from '@rnmapbox/maps';
 
 import { ILocation, IMessage, IUser } from '../utils/types';
 
@@ -83,14 +83,14 @@ export default function MapScreen() {
   }, []);
 
   const getAndroidPersimission = async () => {
-    const isGranted = await MapboxGL.requestAndroidLocationPermissions();
+    const isGranted = await Mapbox.requestAndroidLocationPermissions();
 
     setIsAndroidPermissionGranted(isGranted);
     setIsFetchingAndroidPermissions(false);
   };
 
   useEffect(() => {
-    MapboxGL.getAccessToken().then(res => {
+    Mapbox.getAccessToken().then(res => {
       console.log(res);
       setMapBoxToken(res);
     });
@@ -126,12 +126,12 @@ export default function MapScreen() {
     <SafeAreaView>
       <View style={styles.container}>
         {mapboxToken != '' ? (
-          <MapboxGL.MapView
+          <Mapbox.MapView
             style={styles.map}
             zoomEnabled={true}
             styleURL="mapbox://styles/mapbox/streets-v12"
             rotateEnabled={true}>
-            <MapboxGL.Camera
+            <Mapbox.Camera
               zoomLevel={15}
               centerCoordinate={
                 location
@@ -142,7 +142,7 @@ export default function MapScreen() {
               animationMode={'flyTo'}
               animationDuration={2000}
             />
-            <MapboxGL.PointAnnotation
+            <Mapbox.PointAnnotation
               id="marker"
               onSelected={() => {
                 console.log('fasd');
@@ -155,13 +155,13 @@ export default function MapScreen() {
               <View style={{width: 30, height: 30}}>
                 <Icon name="enviroment" size={30} color="#82BD61" />
               </View>
-            </MapboxGL.PointAnnotation>
+            </Mapbox.PointAnnotation>
 
             {filteredUserList &&
               filteredUserList.length &&
               filteredUserList.map((item, index) => {
                 return (
-                  <MapboxGL.PointAnnotation
+                  <Mapbox.PointAnnotation
                     id={`annotation_${item.location.longitude}_${index}`}
                     key={`${item.location.longitude}`}
                     onSelected={() => {
@@ -174,10 +174,10 @@ export default function MapScreen() {
                     <View>
                       <Icon name="enviroment" size={30} color="#fa2525" />
                     </View>
-                  </MapboxGL.PointAnnotation>
+                  </Mapbox.PointAnnotation>
                 );
               })}
-          </MapboxGL.MapView>
+          </Mapbox.MapView>
         ) : null}
       </View>
       <View

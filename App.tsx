@@ -3,17 +3,16 @@ import { LogBox } from 'react-native';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import MapboxGL from '@rnmapbox/maps';
+import Mapbox from '@rnmapbox/maps';
 
 import ChatListScreen from './src/screens/ChatListScreen';
 import ChatScreen from './src/screens/ChatScreen';
 import HomeScreen from './src/screens/HomeScreen';
 import MapScreen from './src/screens/MapScreen';
 
-MapboxGL.setConnected(true);
-MapboxGL.setTelemetryEnabled(false);
-MapboxGL.setWellKnownTileServer('Mapbox');
-MapboxGL.setAccessToken(
+Mapbox.setTelemetryEnabled(false);
+Mapbox.setWellKnownTileServer('Mapbox');
+Mapbox.setAccessToken(
   'pk.eyJ1IjoiYWJoaXNoZWtiaXN3YXMiLCJhIjoiY2xtYTc1a2trMGRqMzNobDVkaDhiNmJsNCJ9.72RCUYZTh1AGwAXkLT_Tjw',
 );
 
