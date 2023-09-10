@@ -222,7 +222,7 @@ export default function MapScreen() {
               alignSelf: 'center',
               marginTop: 20,
             }}
-            minimumValue={0.55}
+            minimumValue={0.35}
             maximumValue={1}
             minimumTrackTintColor="#FFFFFF"
             maximumTrackTintColor="#000000"
@@ -233,7 +233,7 @@ export default function MapScreen() {
                 userList,
                 location,
                 value,
-                0.5,
+                0.3,
               );
               setFilteredUserList(filteredUsers);
             }}
@@ -241,7 +241,7 @@ export default function MapScreen() {
         ) : null}
 
         <Text style={{color: 'black', alignSelf: 'center', fontSize: 10}}>
-          {'Min value: 0.5 km - Max value: 1.0 km'}
+          {'Min value: 0.3 km - Max value: 1.0 km'}
         </Text>
       </View>
     </SafeAreaView>

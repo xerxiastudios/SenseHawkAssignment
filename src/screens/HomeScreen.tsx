@@ -14,7 +14,7 @@ export default function HomeScreen() {
     Geolocation.getCurrentPosition(info => {
       const {latitude, longitude} = info.coords;
 
-      const users = insertRandomUsers(latitude, longitude, 1, 10);
+      const users = insertRandomUsers(latitude, longitude, 1, 20);
       setUserList(users);
     });
   }, []);
@@ -58,7 +58,7 @@ export const insertRandomUsers = (
 
   for (let i = 0; i < numberOfLocations; i++) {
     // Generate a random radius within the specified range
-    const radiusInKmRan = Math.random() * (radiusInKm - 0.5) + 0.5;
+    const radiusInKmRan = Math.random() * (radiusInKm - 0.3) + 0.3;
 
     // Generate a random angle to distribute locations evenly around the circle
     const randomAngle = Math.random() * 2 * Math.PI;
