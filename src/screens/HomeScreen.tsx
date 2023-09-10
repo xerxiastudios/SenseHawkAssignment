@@ -30,6 +30,11 @@ export default function HomeScreen() {
 
   const updateUserWithNewMessage = (receivedMessage: IMessage) => {
     const updatedUserList = [...userList];
+    const chatToUpdate = updatedUserList.find(element => {
+      return element.name === receivedMessage.chatName;
+    });
+
+    chatToUpdate?.chatData?.push(receivedMessage);
   };
 
   return (

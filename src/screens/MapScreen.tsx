@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
-    ActivityIndicator, Dimensions, Image, SafeAreaView, StyleSheet, Text, View
+    ActivityIndicator, Dimensions, Modal, SafeAreaView, StyleSheet, Text, TouchableOpacity, View
 } from 'react-native';
 import Icon from 'react-native-vector-icons/AntDesign';
 
@@ -33,6 +33,8 @@ export default function MapScreen() {
   const [mapboxToken, setMapBoxToken] = useState('');
   const [maxRadius, setMaxRadius] = useState(1);
   const [filteredUserList, setFilteredUserList] = useState<IUser[]>();
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<IUser>();
   const navigation = useNavigation<any>();
   const route = useRoute();
 
@@ -115,13 +117,11 @@ export default function MapScreen() {
   }
 
   const onMarkerPress = (userData: IUser) => {
-    console.log(userData);
+    // console.log(userData);
 
-    navigation.navigate('Chat', {
-      userData,
-      onMessageSend,
-      updateUserWithNewMessage,
-    });
+    setSelectedUser(userData);
+
+    setModalVisible(true);
   };
 
   return (
@@ -181,6 +181,34 @@ export default function MapScreen() {
               })}
           </Mapbox.MapView>
         ) : null}
+
+        <Modal animationType="none" transparent={true} visible={modalVisible}>
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              <Text style={styles.modalText}>{`${
+                selectedUser?.name || 'User'
+              }`}</Text>
+              <TouchableOpacity
+                style={[styles.button, styles.buttonOpen]}
+                onPress={() => {
+                  setModalVisible(!modalVisible);
+                  // console.log(selectedUser);
+                  navigation.navigate('Chat', {
+                    userData: selectedUser,
+                    onMessageSend,
+                    updateUserWithNewMessage,
+                  });
+                }}>
+                <Text style={styles.textStyle}>Chat</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[]}
+                onPress={() => setModalVisible(!modalVisible)}>
+                <Text style={styles.textStyle}>Close</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
       </View>
       <View
         style={{
@@ -239,5 +267,50 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'green',
     borderRadius: 20,
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 22,
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  button: {
+    borderRadius: 20,
+    paddingVertical: 10,
+    paddingHorizontal: 30,
+    elevation: 2,
+    marginBottom: 16,
+  },
+  buttonOpen: {
+    backgroundColor: '#F194FF',
+  },
+  buttonClose: {
+    backgroundColor: '#2196F3',
+  },
+  textStyle: {
+    color: 'black',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  modalText: {
+    marginBottom: 32,
+    fontSize: 24,
+    textAlign: 'center',
+    color: 'black',
   },
 });

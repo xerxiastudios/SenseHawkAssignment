@@ -25,8 +25,8 @@ export default function ChatScreen() {
     });
   }, []);
 
-  // console.log('--------------------------------');
-  // console.log(userData);
+  console.log('--------------------------------');
+  console.log(route.params);
 
   const onSendPress = () => {
     if (text.trim() === '') return;
