@@ -5,6 +5,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import MapboxGL from '@rnmapbox/maps';
 
+import ChatListScreen from './src/screens/ChatListScreen';
 import ChatScreen from './src/screens/ChatScreen';
 import HomeScreen from './src/screens/HomeScreen';
 import MapScreen from './src/screens/MapScreen';
@@ -30,6 +31,7 @@ export default function App() {
         <Stack.Screen name="Map" component={MapScreen} />
         <Stack.Screen name="Chat" component={ChatScreen} />
         <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="ChatList" component={ChatListScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
